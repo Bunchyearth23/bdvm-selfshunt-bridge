@@ -1,0 +1,1 @@
+{"id":"BDVM.SelfShuntBridge","version":"1.0.0","kind":"bridge","optional":true,"upstreamPermission":"forks-with-credit","dependencies":["BDVM.Common","SelfShunt.API"]}

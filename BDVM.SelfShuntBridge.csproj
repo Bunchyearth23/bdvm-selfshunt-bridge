@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AssemblyName>BDVM.SelfShuntBridge</AssemblyName>
+    <RootNamespace>BDVM.SelfShuntBridge</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BDVM.Common\BDVM.Common.csproj" />
+    <ProjectReference Include="..\..\..\dv-selfshunt-fork\SelfShunt.API\SelfShunt.API.csproj" />
+  </ItemGroup>
+</Project>
