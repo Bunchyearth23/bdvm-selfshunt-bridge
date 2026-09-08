@@ -19,13 +19,18 @@ public sealed class SelfShuntGeneratorControl : IBdvmCompetingGeneratorControl
         api.IsNewGenerationSuspended("") && api.IsNaturalCarPopulationSuspended;
 
     public bool TryApplyStrictEconomyPolicy(string operationId)
+        => TrySetStrictEconomyPolicy(operationId, true);
+
+    public bool TrySetStrictEconomyPolicy(string operationId, bool suspended)
     {
         if (!IsAvailable || string.IsNullOrWhiteSpace(operationId)) return false;
 
-        // Suspend free rolling-stock population first. If the second operation fails,
-        // the world remains in the safer (scarcer) state and the caller fails closed.
-        if (!api.SetNaturalCarPopulationSuspended(operationId + ":cars", true)) return false;
-        if (!api.SetNewGenerationSuspended(operationId + ":jobs", "", true)) return false;
-        return IsStrictEconomyPolicyApplied;
+        if (!api.SetNaturalCarPopulationSuspended(operationId + ":cars", suspended)) return false;
+        if (!api.SetNewGenerationSuspended(operationId + ":jobs", "", suspended))
+        {
+            api.SetNaturalCarPopulationSuspended(operationId + ":cars-rollback", !suspended);
+            return false;
+        }
+        return api.IsNewGenerationSuspended("") == suspended && api.IsNaturalCarPopulationSuspended == suspended;
     }
 }

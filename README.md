@@ -20,6 +20,7 @@ SelfShunt and its DLLs are not bundled here. If it is absent or incompatible, om
 - Implement `IBdvmCompetingGeneratorControl` with `SelfShuntGeneratorControl`.
 - Allow the authoritative host to request suppression of SelfShunt job generation.
 - Allow the authoritative host to request suppression of natural rolling-stock population when the BDVM finite market owns supply.
+- Roll back natural-car suspension if the matching job-generation policy cannot be applied, avoiding a silently partial strict policy.
 - Report missing, incompatible or non-authoritative conditions rather than pretending the request succeeded.
 
 ## Boundaries
