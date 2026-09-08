@@ -22,10 +22,13 @@ SelfShunt and its DLLs are not bundled here. If it is absent or incompatible, om
 - Allow the authoritative host to request suppression of natural rolling-stock population when the BDVM finite market owns supply.
 - Roll back natural-car suspension if the matching job-generation policy cannot be applied, avoiding a silently partial strict policy.
 - Report missing, incompatible or non-authoritative conditions rather than pretending the request succeeded.
+- Register the stable BDVM operation/job correlation only after strict external economic authority is active.
+- Forward external-job, cumulative-delivery and completion observations to a BDVM lifecycle sink.
+- Require an observed SelfShunt payout of exactly zero, reject regressive quantities, and resume production once per completed job.
 
 ## Boundaries
 
-The bridge does not bundle or replace SelfShunt, spawn vehicles, operate trains, create contracts or mutate money. It is a narrow coordination layer. It must not call an unversioned internal SelfShunt implementation or continue optimistically when the API cannot confirm control.
+The bridge does not bundle or replace SelfShunt, spawn vehicles, operate trains, create contracts or mutate money. External registration correlates a BDVM contract with a SelfShunt-facing job; it does not itself instantiate the Unity job. It is a narrow coordination layer. It must not call an unversioned internal SelfShunt implementation or continue optimistically when the API cannot confirm control.
 
 ## Build and dependencies
 
@@ -39,7 +42,7 @@ A standalone checkout may pass an equivalent project layout or update the projec
 
 ## Testing and installation
 
-Validation checks host-only behavior and fail-closed handling for missing or incompatible services. This is not an independent Unity Mod Manager mod. Install matching builds of `BDVM.Full` and the BDVM SelfShunt fork; do not install only `BDVM.SelfShuntBridge.dll`.
+Offline validation checks host-only behavior, idempotent registration and delivery, zero SelfShunt payout, monotonic cumulative quantities, single production resume, and fail-closed handling for missing or incompatible services. Physical job creation, warehouse delivery and resumed production still require a live host/client validation. This is not an independent Unity Mod Manager mod. Install matching builds of `BDVM.Full` and the BDVM SelfShunt fork; do not install only `BDVM.SelfShuntBridge.dll`.
 
 ## Upstream and provenance
 
