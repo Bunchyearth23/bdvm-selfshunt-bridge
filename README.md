@@ -56,4 +56,4 @@ The bridge requires the compatible, versioned `SelfShunt.API`. Missing capabilit
 
 ## License
 
-The BDVM bridge code is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE). SelfShunt-derived work remains subject to the permission and attribution recorded above.
+The BDVM bridge code is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and the applied copyright [NOTICE](NOTICE). SelfShunt-derived work remains subject to the permission and attribution recorded above.
