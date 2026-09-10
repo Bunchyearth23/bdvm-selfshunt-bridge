@@ -25,10 +25,11 @@ SelfShunt and its DLLs are not bundled here. If it is absent or incompatible, om
 - Register the stable BDVM operation/job correlation only after strict external economic authority is active.
 - Forward external-job, cumulative-delivery and completion observations to a BDVM lifecycle sink.
 - Require an observed SelfShunt payout of exactly zero, reject regressive quantities, and resume production once per completed job.
+- Pass BDVM's planned base reward plus scarcity bonus as display-only metadata so the SelfShunt booklet can show the expected amount without enabling a second payout path.
 
 ## Boundaries
 
-The bridge does not bundle or replace SelfShunt, spawn vehicles, operate trains, create contracts or mutate money. External registration correlates a BDVM contract with a SelfShunt-facing job; it does not itself instantiate the Unity job. It is a narrow coordination layer. It must not call an unversioned internal SelfShunt implementation or continue optimistically when the API cannot confirm control.
+The bridge does not bundle or replace SelfShunt, spawn vehicles, operate trains, create contracts or mutate money. External registration correlates a BDVM contract with a SelfShunt-facing job; it does not itself instantiate the Unity job. The displayed BDVM reward is informational: SelfShunt's vanilla wage remains zero and BDVM alone settles the authoritative reward from actual delivery. It is a narrow coordination layer. It must not call an unversioned internal SelfShunt implementation or continue optimistically when the API cannot confirm control.
 
 ## Build and dependencies
 
@@ -47,7 +48,7 @@ Offline validation checks host-only behavior, idempotent registration and delive
 ## Upstream and provenance
 
 - Original repository: [Chump-the-Lump/DV-SelfShunter](https://github.com/Chump-the-Lump/DV-SelfShunter).
-- BDVM fork: [Bunchyearth23/DV-SelfShunter](https://github.com/Bunchyearth23/DV-SelfShunter), branch `dvcompany-integration`.
+- BDVM fork: [Bunchyearth23/DV-SelfShunter](https://github.com/Bunchyearth23/DV-SelfShunter).
 - Recorded source revision: `329c85cf51715404af3b4d455239d9fc54f5ac5b`.
 - Original author credit: `Chump_the_Lump`.
 

@@ -7,7 +7,9 @@ namespace BDVM.SelfShuntBridge;
 public interface ISelfShuntIndustrialLifecycleSink
 {
     bool TryObserveExternalJob(string operationId, string jobId, string stationId, string cargoId);
+    bool TryObserveLoading(string operationId, string jobId, decimal cumulativeQuantity);
     bool TryObserveDelivery(string operationId, string jobId, decimal cumulativeQuantity);
+    bool TryObserveCancellation(string operationId, string jobId, bool expired);
     bool TryResumeProduction(string operationId, string jobId);
 }
 
@@ -16,6 +18,7 @@ public sealed class SelfShuntIndustrialLifecycleAdapter : IDisposable
     private readonly ISelfShuntIntegrationApi api;
     private readonly ISelfShuntIndustrialLifecycleSink sink;
     private readonly Action<string> log;
+    private readonly Dictionary<string, decimal> loaded = new Dictionary<string, decimal>(StringComparer.Ordinal);
     private readonly Dictionary<string, decimal> delivered = new Dictionary<string, decimal>(StringComparer.Ordinal);
     private readonly HashSet<string> resumed = new HashSet<string>(StringComparer.Ordinal);
 
@@ -70,6 +73,31 @@ public sealed class SelfShuntIndustrialLifecycleAdapter : IDisposable
             }
             delivered[value.JobId] = value.CumulativeQuantity;
             log("selfshunt-delivery-observed:" + value.JobId + ":" + value.CumulativeQuantity);
+            return;
+        }
+
+        if (value.Type == SelfShuntIntegrationEventType.LoadingObserved)
+        {
+            if (value.CumulativeQuantity < 0 || (loaded.TryGetValue(value.JobId, out var known) && value.CumulativeQuantity < known))
+            {
+                log("selfshunt-loading-refused:non-monotonic:" + value.JobId);
+                return;
+            }
+            if (loaded.TryGetValue(value.JobId, out known) && value.CumulativeQuantity == known) return;
+            if (!sink.TryObserveLoading(value.OperationId + ":loading:" + value.CumulativeQuantity, value.JobId, value.CumulativeQuantity))
+            {
+                log("selfshunt-loading-rejected:" + value.JobId);
+                return;
+            }
+            loaded[value.JobId] = value.CumulativeQuantity;
+            log("selfshunt-loading-observed:" + value.JobId + ":" + value.CumulativeQuantity);
+            return;
+        }
+
+        if (value.Type == SelfShuntIntegrationEventType.Cancelled || value.Type == SelfShuntIntegrationEventType.Expired)
+        {
+            var accepted = sink.TryObserveCancellation(value.OperationId + ":cancel", value.JobId, value.Type == SelfShuntIntegrationEventType.Expired);
+            log((accepted ? "selfshunt-contract-cancelled:" : "selfshunt-contract-cancellation-rejected:") + value.JobId);
             return;
         }
 
